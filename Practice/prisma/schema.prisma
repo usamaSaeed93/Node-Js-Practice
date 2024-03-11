@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model posts {
+  id            BigInt  @id
+  category      String? @db.VarChar(255)
+  content       String? @db.VarChar(255)
+  creation_date String? @db.VarChar(255)
+  last_updated  String? @db.VarChar(255)
+  title         String? @db.VarChar(255)
+  user_id       BigInt
+  users         users   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk5lidm6cqbc7u4xhqpxm898qme")
+}
+
+model roles {
+  id         BigInt       @id @default(autoincrement())
+  name       String       @db.VarChar(255)
+  user_roles user_roles[]
+}
+
+model token {
+  id            Int      @id @default(autoincrement())
+  is_logged_out Boolean?
+  token         String?  @db.VarChar(255)
+  user_id       BigInt?
+  users         users?   @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkj8rfw4x0wjjyibfqq566j4qng")
+}
+
+model user_roles {
+  user_id BigInt 
+  role_id BigInt
+  roles   roles  @relation(fields: [role_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkh8ciramu9cc9q3qcqiv4ue8a6")
+  users   users  @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fkhfh9dx7w3ubf1co1vdev94g3f")
+
+  @@id([user_id, role_id])
+}
+
+model users {
+  id         BigInt       @id @default(autoincrement())
+  email      String       @db.VarChar(255)
+  name       String       @db.VarChar(255)
+  password   String       @db.VarChar(255)
+  username   String       @db.VarChar(255)
+  posts      posts[]
+  token      token[]
+  user_roles user_roles[]
+}
